@@ -312,6 +312,9 @@ gseaplot2 <- function(x, geneSetID, title = "", color="green", base_size = 11,
 ##' @param geneSetID gene set ID
 ##' @param title plot title
 ##' @param color color of running enrichment score line
+##' @param group1 name of the first group
+##' @param group2 name of the second group
+##' @param group_label_size font size for the group label
 ##' @param base_size base font size
 ##' @param rel_heights relative heights of subplots
 ##' @param subplots which subplots to be displayed
