@@ -335,9 +335,9 @@ gseaplot2 <- function(x, geneSetID, title = "", color="green", base_size = 11,
 ##' @importFrom stats quantile
 ##' @importFrom RColorBrewer brewer.pal
 ##' @author Joshua Soon
-gseaplot2.2 <- function(x, geneSetID, title = "", color="green", base_size = 11,
-                      rel_heights=c(1.5, .5, 1), subplots = 1:3,
-                      pvalue_table = FALSE, ES_geom="line") {
+gseaplot2.2 <- function(x, geneSetID, title = "", color="green", group1 = "group 1", group2 = "group 2",
+                        group_label_size = 7, base_size = 11, rel_heights=c(1.5, .5, 1), subplots = 1:3,
+                        pvalue_table = FALSE, ES_geom="line") {
     ES_geom <- match.arg(ES_geom, c("line", "dot"))
 
     geneList <- position <- NULL ## to satisfy codetool
@@ -439,6 +439,10 @@ gseaplot2.2 <- function(x, geneSetID, title = "", color="green", base_size = 11,
     p.pos <- p.pos + ylab("Ranked List Metric") +
         xlab("Rank in Ordered Dataset") +
         theme(plot.margin=margin(t = -.1, r = .2, b=.2, l=.2, unit="cm"))
+
+    p.pos <- p.pos + annotate("text", x = c(0, Inf), y = Inf, 
+        label = c(group1, group2), color = c("red", "blue"), 
+        size = group_label_size, hjust = "inward", vjust = "inward")
 
     if (!is.null(title) && !is.na(title) && title != "")
         p.res <- p.res + ggtitle(title)
