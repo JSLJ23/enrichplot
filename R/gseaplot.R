@@ -338,8 +338,8 @@ gseaplot2 <- function(x, geneSetID, title = "", color="green", base_size = 11,
 ##' @importFrom stats quantile
 ##' @importFrom RColorBrewer brewer.pal
 ##' @author Joshua Soon
-gseaplot2.2 <- function(x, geneSetID, title = "", color="green", group1 = "group 1", group2 = "group 2",
-                        group_label_size = 7, base_size = 11, rel_heights=c(1.5, .5, 1), subplots = 1:3,
+gseaplot2.2 <- function(x, geneSetID, title = "", color="green", group1, group2,
+                        group_label_size, base_size = 11, rel_heights=c(1.5, .5, 1), subplots = 1:3,
                         pvalue_table = FALSE, ES_geom="line") {
     ES_geom <- match.arg(ES_geom, c("line", "dot"))
 
