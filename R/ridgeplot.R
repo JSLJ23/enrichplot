@@ -18,6 +18,7 @@ setMethod("ridgeplot", signature(x = "gseaResult"),
 ##' @importFrom ggplot2 xlab
 ##' @importFrom ggplot2 ylab
 ##' @importFrom ggplot2 scale_y_discrete
+##' @importFrom rlang check_installed
 ##' @author Guangchuang Yu
 ridgeplot.gseaResult <- function(x, showCategory=30, fill="p.adjust",
                                  core_enrichment = TRUE, label_format = 30,
@@ -74,11 +75,12 @@ ridgeplot.gseaResult <- function(x, showCategory=30, fill="p.adjust",
         label_func <- label_format
     }
 
+    check_installed('ggridges', 'for `ridgeplot()`.')
+
     ggplot(gs2val.df, aes_string(x="value", y="category", fill=fill)) +
         ggridges::geom_density_ridges() +
-        ## scale_x_reverse() +
-        scale_fill_continuous(low="red", high="blue", name = fill,
-            guide=guide_colorbar(reverse=TRUE)) +
+        # scale_fill_continuous(name = fill) +
+        set_enrichplot_color(type = "fill", name = fill) + 
         scale_y_discrete(labels = label_func) +
         ## scale_fill_gradientn(name = fill, colors=sig_palette, guide=guide_colorbar(reverse=TRUE)) +
         ## geom_vline(xintercept=0, color='firebrick', linetype='dashed') +

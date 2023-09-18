@@ -22,6 +22,7 @@ setMethod("heatplot", signature(x = "gseaResult"),
 ##' @importFrom ggplot2 element_text
 ##' @importFrom ggplot2 scale_y_discrete
 ##' @importFrom ggplot2 scale_fill_gradient2
+##' @importFrom rlang check_installed
 ##' @param label_format a numeric value sets wrap length, alternatively a
 ##' custom function to format axis labels.
 ##' @param symbol symbol of the nodes, one of "rect"(the default) and "dot"
@@ -78,6 +79,9 @@ heatplot.enrichResult <- function(x, showCategory = 30, symbol = "rect", foldCha
     # copy from https://stackoverflow.com/questions/11053899/how-to-get-a-reversed-log10-scale-in-ggplot2
     reverselog_trans <- function(base = exp(1)) {
         trans <- function(x) -log(x, base)
+   
+        check_installed('scales', 'for `heatplot()`.')
+    
         inv <- function(x) base^(-x)
         scales::trans_new(paste0("reverselog-", format(base)), trans, inv, 
                   scales::log_breaks(base = base), 
@@ -96,9 +100,10 @@ heatplot.enrichResult <- function(x, showCategory = 30, symbol = "rect", foldCha
 
     if (!is.null(foldChange)) {
             p <- p + aes_(fill = ~foldChange) + 
-                # scale_fill_continuous(low="blue", high="red", name = "fold change")
-                scale_fill_gradient2(name = "fold change", low = "blue",
-                                   mid = "white", high = "red")
+                set_enrichplot_color(colors = get_enrichplot_color(3), type = "fill")
+                # scale_fill_gradient2(name = "fold change", low = "#327eba",
+                #                    mid = "white", high = "#e06663") +
+
     }
     
 

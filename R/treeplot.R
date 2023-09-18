@@ -312,6 +312,7 @@ treeplot.enrichResult <- function(x,
 ##' @importFrom ggtree nodepie
 ##' @importFrom ggtree geom_inset
 ##' @importFrom ggplot2 scale_fill_manual
+##' @importFrom rlang check_installed
 treeplot.compareClusterResult <-  function(x, 
                                       showCategory = 5,
                                       color = "p.adjust",
@@ -546,10 +547,9 @@ treeplot.compareClusterResult <-  function(x,
         p <- p + ggnewscale::new_scale_fill() # +
             # coord_equal(xlim = xlim)
         p <- ggtree::gheatmap(p, ID_Cluster_mat) + 
-            scale_fill_continuous(low="red", high="blue", 
-                                  guide = guide_colorbar(reverse=TRUE),
-                                  trans = "log10",
-                                  name = color) 
+            # scale_fill_continuous(trans = "log10", name = color) +
+            set_enrichplot_color(type = "fill", trans = "log10", name = color)
+            
     }
 
     if (geneClusterPanel == "dotplot") {
@@ -558,17 +558,15 @@ treeplot.compareClusterResult <-  function(x,
         paths <- pData$label[order(pData$y, decreasing = TRUE)] %>% .[!is.na(.)]
         dotdata <- dotdata[dotdata$Description %in% paths, ]
         dotdata <- dplyr::select(dotdata, Description, dplyr::everything())
-        p <- p + ggnewscale::new_scale_colour() + 
+        check_installed("ggtreeExtra", "for `treeplot()` with ` clusterPanel = 'dotplot'`.")
+	    p <- p + ggnewscale::new_scale_colour() + 
             ggtreeExtra::geom_fruit(data = dotdata, geom = geom_point,
                        mapping = aes_string(x = "Cluster", y = "Description", 
                                      size = "Count", color = color),
                        pwidth = 0.5, offset = -0.2,
                        axis.params = list(axis = "x", text.size = 3, line.alpha = 0)) +
-            scale_colour_continuous(low="red", high="blue", 
-                                  guide=guide_colorbar(reverse=TRUE),
-                                  trans = "log10",
-                                  name = color) # + 
-            # coord_equal(xlim = xlim) 
+            # scale_colour_continuous(trans = "log10", name = color) + 
+            set_enrichplot_color(trans = "log10", name = color)
             
     }
     p + ggtree::hexpand(ratio = hexpand) + coord_equal()
@@ -600,6 +598,7 @@ fill_termsim <- function(x, keep) {
 ##' @param label_format a numeric value sets wrap length, alternatively a
 ##' custom function to format axis labels.
 ##' @param offset offset of bar and text from the clade.
+##' @importFrom rlang check_installed
 ##'
 ##' @return a ggtree object
 ##' @noRd
@@ -617,7 +616,8 @@ add_cladelab <- function(p, nWords, label_format_cladelab,
     cluster_label <- label_func_cladelab(cluster_label)
     n_color <- length(levels(cluster_color)) - length(cluster_color)
     if (is.null(group_color)) {
-        color2 <- scales::hue_pal()(length(roots) + n_color)
+        check_installed('scales', 'for `add_cladelab()`.')
+	color2 <- scales::hue_pal()(length(roots) + n_color)
         if (n_color > 0) color2 <- color2[-seq_len(n_color)]
     } else {
         color2 <- group_color
@@ -723,8 +723,8 @@ group_tree <- function(hc, clus, d, offset_tiplab, nWords,
     if (add_tippoint) {
         p <- p + ggnewscale::new_scale_colour() +
             geom_tippoint(aes(color = color, size = count)) + 
-            scale_colour_continuous(low="red", high="blue", name = color, 
-                guide = guide_colorbar(reverse = TRUE))
+            # scale_colour_continuous(name = color)+
+            set_enrichplot_color(name = color)
     }
     ## add tiplab 
     p <- p + geom_tiplab(offset = offset_tiplab, hjust = 0,

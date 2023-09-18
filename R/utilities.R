@@ -13,16 +13,87 @@ autofacet <- function(by = 'row', scales = "free", levels = NULL) {
             class = "autofacet")
 }
 
+get_enrichplot_color <- function(n = 2) {
+    colors <- getOption("enrichplot.colours")
+    if (!is.null(colors)) return(colors)
+
+    if (n != 2 && n != 3) stop("'n' should be 2 or 3")
+
+    colors = c("#e06663", "#327eba")
+    if (n == 2) return(colors)
+
+    if (n == 3) return(c(colors[1], "white", colors[2]))
+}
+
+##' helper function to set color for enrichplot
+##' 
+##' 
+##' @title set_enrichplot_color
+##' @param colors user provided color vector
+##' @param type one of 'color', 'colour' or 'fill'
+##' @param name name of the color legend
+##' @param .fun force to use user provided color scale function
+##' @param ... additional parameter that passed to the color scale function
+##' @return a color scale
+##' @importFrom ggplot2 scale_fill_continuous
+##' @importFrom ggplot2 scale_color_continuous
+##' @importFrom ggplot2 scale_fill_gradientn
+##' @importFrom ggplot2 scale_color_gradientn
+##' @export
+set_enrichplot_color <- function(colors = get_enrichplot_color(2), 
+                                type = "color", name = NULL, .fun = NULL, ...) {
+
+    type <- match.arg(type, c("color", "colour", "fill"))
+    
+    n <- length(colors)
+    if (n < 2) {
+        stop("'colors' should be of length >= 2")
+    } else if (n == 2) {
+        params <- list(low = colors[1], high = colors[2])
+        fn_suffix <- "continuous"
+    } else if (n == 3) {
+        params <- list(low = colors[1], mid = colors[2], high = colors[3])
+        fn_suffix <- "gradient2"
+    } else {
+        params <- list(colors = colors) 
+        fn_suffix <- "gradientn"   
+    }
+    
+    if (!is.null(.fun)) {
+        if (n == 3) { 
+            # should determine parameter for user selected functions: 'gradient2' or 'gradientn'
+            fn_type <- which_scale_fun(.fun)
+            if (fn_type == "gradientn") {
+                 params <- list(colors = colors) 
+            } else {
+                params <- list(low = colors[1], mid = colors[2], high = colors[3])
+            }
+        }
+    } else {
+        fn <- sprintf("scale_%s_%s", type, fn_suffix)
+        .fun <- getFromNamespace(fn, "ggplot2")
+    }
+
+    params$guide <- guide_colorbar(reverse=TRUE, order=1)
+    params$name <- name # no legend name setting by default as 'name = NULL'
+
+    params <- modifyList(params, list(...))
+
+    do.call(.fun, params)
+}
 
 
-# has_package <- function(pkg){
-    # if (!requireNamespace(pkg, quietly  = TRUE)) {
-        # stop(paste0(pkg, " needed for this function to work. Please install it."),
-            # call. = FALSE)
-    # }
-# }
-
-
+which_scale_fun <- function(.fun) {
+    params <- args(.fun) |> as.list() |> names()
+    if ("colours" %in% params) {
+        return("gradientn")
+    }
+    if ("mid" %in% params) {
+        return("gradient2")
+    }
+    # maybe need to determine whether is continuous or discrete
+    return("continuous")
+}
 
 ##' @method as.data.frame compareClusterResult
 ##' @export
@@ -35,10 +106,12 @@ as.data.frame.compareClusterResult <- function(x, ...) {
 ##' The function only works for compareClusterResult
 ##'
 ##' @importFrom DOSE geneID
+##' @importFrom rlang check_installed
 ##' @param y a data.frame converted from compareClusterResult
 ##' @return a data.frame
 ##' @noRd
 prepare_pie_gene <- function(y) {
+    check_installed('tibble', 'for `prepare_pie_gene()`.')
     gene_pie <- tibble::as_tibble(y[,c("Cluster", "Description", "geneID")])
     gene_pie$geneID <- strsplit(gene_pie$geneID, '/')
     gene_pie2 <- as.data.frame(tidyr::unnest(gene_pie, cols=geneID))
@@ -93,7 +166,7 @@ prepare_pie_data <- function(pie_data, pie = "equal",type = "category") {
             ID_Cluster_mat[pie_data[i,2],pie_data[i,1]] <- 1
         } else {
             ID_Cluster_mat[pie_data[i,3],pie_data[i,1]] <- 1
-    }
+        }
 
     }
     return(ID_Cluster_mat)
@@ -106,15 +179,18 @@ prepare_pie_data <- function(pie_data, pie = "equal",type = "category") {
 ##' @title color_palette
 ##' @param colors colors of length >=2
 ##' @return color vector
+##' @importFrom rlang check_installed
 ##' @export
 ##' @examples
 ##' color_palette(c("red", "yellow", "green"))
 ##' @author guangchuang yu
 color_palette <- function(colors) {
     # has_package("grDevices")
+    check_installed('grDevices', 'for `color_palette()`.')
     grDevices::colorRampPalette(colors)(n = 299)
 }
 
+enrichplot_point_shape <- ggfun:::enrichplot_point_shape
 
 sig_palette <- color_palette(c("red", "yellow", "blue"))
 

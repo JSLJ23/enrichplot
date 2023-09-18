@@ -419,6 +419,7 @@ get_label_location <- function(ggData, label_format) {
 ##' @param label_group a numeric value, default size of group label.
 ##' @param cex_label_group scale of group labels size.
 ##' @param ... additional parameters.
+##' @importFrom rlang check_installed
 ##' @return a ggplot2 object.
 ##' @noRd
 add_group_label <- function(label_style, repel, shadowtext, p, label_location, 
@@ -439,6 +440,7 @@ add_group_label <- function(label_style, repel, shadowtext, p, label_location,
         return(p)
     }
 
+    check_installed('ggrepel', 'for `add_group_label()` with `repel = TRUE`.')  
     if (shadowtext) {
         p <- p + ggrepel::geom_text_repel(data = label_location,
             aes_(x =~ x, y =~ y, label =~ label), colour = "black",
@@ -536,12 +538,16 @@ groupNode <- function(p, enrichDf, nWords, clusterFunction =  stats::kmeans, nCl
 ##' @param ellipse_style style of ellipse, one of "ggforce" an "polygon".
 ##' @param ellipse_pro numeric indicating confidence value for the ellipses
 ##' @param alpha the transparency of ellipse fill.
+##' @importFrom rlang check_installed
 ##' @noRd
 add_ellipse <- function(p, group_legend, label_style, 
     ellipse_style = "ggforce", ellipse_pro = 0.95, alpha = 0.3, ...) {
     show_legend <- c(group_legend, FALSE)
     names(show_legend) <- c("fill", "color") 
     ellipse_style <- match.arg(ellipse_style, c("ggforce", "polygon"))
+    
+    check_installed('ggforce', 'for `add_ellipse()`.')
+    
     if (ellipse_style == "ggforce") {
         if (label_style == "shadowtext") {
             p <- p + ggforce::geom_mark_ellipse(aes_(x =~ x, y =~ y, color =~ color2,
@@ -592,8 +598,8 @@ add_category_nodes <- function(p, cex_category, color) {
                                     size=~size, alpha=~I(alpha))) +
         scale_size_continuous(name = "number of genes",
                               range = c(3, 8) * cex_category) +
-        scale_fill_continuous(low = "red", high = "blue", name = color,
-                              guide = guide_colorbar(reverse = TRUE)) + 
+        # scale_fill_continuous(name = color) + 
+        set_enrichplot_color(type = "fill", name = color) +
         theme(legend.title = element_text(size = 10),
                    legend.text  = element_text(size = 10)) +
         theme(panel.background = element_blank()) 
@@ -668,8 +674,8 @@ add_pie_node <- function(p, ID_Cluster_mat, node_label,
             p <- add_node_label(p = p, data = NULL, label_size_node = label_size_category,
                 cex_label_node = cex_label_category, shadowtext = shadowtext)
         }
-        p <- p + scale_color_continuous(low="red", high="blue", name = color,
-                                        guide=guide_colorbar(reverse=TRUE)) +
+        p <- p + # scale_color_continuous(name = color) +
+            set_enrichplot_color(name = color) + 
             scale_size(range=c(3, 8) * cex_category)  +labs(title= title)  
     }  
     return(p)
