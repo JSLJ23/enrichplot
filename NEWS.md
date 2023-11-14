@@ -1,3 +1,12 @@
+# enrichplot 1.23.0.991
+
++ fix `treeplot()` to compatible with the current version of ggtree and ggtreeExtra. (2023-10-28, Sat)
++ add clusterPanel.params[["colnames_angle"]] parameter to set the angle of colnames. (2023-10-28, Sat)
+
+# enrichplot 1.22.0
+
++ Bioconductor RELEASE_3_18 (2023-10-25, Wed)
+
 # enrichplot 1.21.3
 
 + `set_enrichplot_color()`, a helper function to set colors (2023-09-13, Wed)
