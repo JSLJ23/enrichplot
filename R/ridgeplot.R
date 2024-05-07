@@ -39,11 +39,19 @@ ridgeplot.gseaResult <- function(x, showCategory=30, fill="p.adjust",
         message('wrong orderBy parameter; set to default `orderBy = "NES"`')
         orderBy <- "NES"
     }
-    n <- showCategory
-    if (core_enrichment) {
-        gs2id <- geneInCategory(x)[seq_len(n)]
+    if (inherits(showCategory, 'numeric')) {
+        selected <- seq_len(showCategory)
+    } else if (inherits(showCategory, "character")) {
+        ii <- match(showCategory, x@result$Description)
+        selected <- x@result[ii, "ID"]
     } else {
-        gs2id <- x@geneSets[x$ID[seq_len(n)]]
+        warning("showCategory should be a number of pathways or a vector of selected pathways")
+    }
+
+    if (core_enrichment) {
+        gs2id <- geneInCategory(x)[selected]
+    } else {
+        gs2id <- x@geneSets[x$ID[selected]]
     }
 
     if (x@readable && length(x@gene2Symbol) > 0) {
