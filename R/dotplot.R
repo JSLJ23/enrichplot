@@ -1,6 +1,6 @@
 ##' @rdname dotplot
 ##' @exportMethod dotplot
-##' @author guangchuang yu
+##' @author Guangchuang Yu
 setMethod("dotplot", signature(object = "enrichResult"),
           function(object, x = "GeneRatio", color = "p.adjust",
                    showCategory=10, size = NULL,
@@ -70,7 +70,7 @@ setMethod("dotplot", signature(object="compareClusterResult"),
 ##' @rdname dotplot
 ##' @exportMethod dotplot
 ##' @aliases dotplot,enrichResultList,ANY-method
-##' @author guangchuang yu
+##' @author Guangchuang Yu
 setMethod("dotplot", signature(object = "enrichResultList"),
           function(object, x = "GeneRatio", color = "p.adjust",
                    showCategory=10, size = NULL,
@@ -188,10 +188,7 @@ dotplot.enrichResult <- function(object, x = "geneRatio", color = "p.adjust",
         df <- dplyr::mutate(df, x = eval(parse(text=x)))
     }
 
-    label_func <- default_labeller(label_format)
-    if(is.function(label_format)) {
-        label_func <- label_format
-    }
+    label_func <- .label_format(label_format)
 
     idx <- order(df[[orderBy]], decreasing = decreasing)
 
@@ -208,6 +205,14 @@ dotplot.enrichResult <- function(object, x = "geneRatio", color = "p.adjust",
     
     class(p) <- c("enrichplotDot", class(p))
     return(p)
+}
+
+.label_format <- function(label_format = 30) {
+    label_func <- default_labeller(label_format)
+    if(is.function(label_format)) {
+        label_func <- label_format
+    } 
+    return(label_func)   
 }
 
 
@@ -342,3 +347,57 @@ append_intersect <- function(x) {
     return(x)
 }
 
+##' compare two clusters in the compareClusterResult object
+##'
+##'
+##' @title dotplot2
+##' @param object a compareClusterResult object
+##' @param x selected variable to visualize in x-axis
+##' @param vars selected Clusters to be compared, only length of two is supported
+##' @param label to label the Clusters in the plot, should be a named vector
+##' @param ... additional parameters passed to dotplot
+##' @return a ggplot object
+##' @importFrom ggplot2 geom_segment
+##' @importFrom ggplot2 geom_vline
+##' @importFrom ggplot2 geom_blank
+##' @importFrom grid arrow
+##' @importFrom grid unit
+##' @export
+##' @author Guangchuang Yu
+dotplot2 <- function(object, x="FoldEnrichment", vars = NULL, label = "auto", ...) {
+    if (!is(object, 'compareClusterResult')) {
+        stop('only compareClusterResult object is supported')
+    }
+
+    if (length(vars) != 2) {
+        stop("vars should be of length 2.")
+    }
+    object <- dplyr::filter(object, .data$Cluster %in% vars)
+    d <- object@compareClusterResult
+    d[[x]] <- d[[x]] * ifelse(d$Cluster == vars[1], -1, 1)
+    object@compareClusterResult <-  d
+    p <- dotplot(object, x = x, ...)
+    p <- p + geom_segment(aes(xend=0, yend=.data$Description), 
+            size=1, color='grey50') + 
+        geom_vline(xintercept=0, lty='dashed') + 
+        scale_x_continuous(labels = abs)
+    
+    p$layers <- rev(p$layers)
+    
+    if (is.null(label)) return (p)
+
+    d <- dplyr::group_by(object, .data$Cluster) |> 
+        dplyr::summarise(mid = max(abs(.data[[x]])) * sign(max(.data[[x]]))/2)
+
+    if (label != "auto") {
+        d$Cluster <- label[d$Cluster]
+    }
+
+    p + geom_text(aes(x=.data$mid, y=.4, label=.data$Cluster), 
+                data=d, inherit.aes = FALSE, size=5) + 
+        geom_segment(aes(x=0, xend=.data$mid, y=.2, yend=.2), 
+                data=d, inherit.aes=FALSE, 
+                arrow = arrow(length=unit(0.30,"cm"), type = "closed")) +
+        geom_blank(data = data.frame(y=0), aes(y=.data$y), inherit.aes=FALSE)
+
+}
