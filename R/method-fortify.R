@@ -78,7 +78,7 @@ fortify.compareClusterResult <- function(model, data, showCategory=5,
 
     result <- result[result$Count != 0, ]
     result$Description <- factor(result$Description,
-                                 levels=rev(GOlevel[,2]))
+                                 levels=unique(rev(GOlevel[,2])))
     if (by=="rowPercentage") {
         Description <- Count <- NULL # to satisfy codetools
         result <- ddply(result,
@@ -102,17 +102,16 @@ fortify.compareClusterResult <- function(model, data, showCategory=5,
         result <- result[, colnames(result) != "Total"]
 
         result$Description <- factor(result$Description,
-                                     levels=rev(Termlevel))
+                                     levels=unique(rev(Termlevel)))
 
     } else if (by == "count") {
-        ## nothing
+        result$GeneRatio <- DOSE::parse_ratio(result$GeneRatio)
     } else if (by == "geneRatio") {
         ## for result of ORA
         # if (class(result$GeneRatio) == "character" && grep("/", result$GeneRatio[1])) {
         if (inherits(result$GeneRatio, "character") && grep("/", result$GeneRatio[1])) {
-            gsize <- as.numeric(sub("/\\d+$", "", as.character(result$GeneRatio)))
             gcsize <- as.numeric(sub("^\\d+/", "", as.character(result$GeneRatio)))
-            result$GeneRatio <- gsize/gcsize
+            result$GeneRatio <- DOSE::parse_ratio(result$GeneRatio)
             if (("ONTOLOGY" %in% colnames(result)) && (length(unique(result$ONTOLOGY)) > 1)){
                 # do nothing
             } else {
