@@ -31,22 +31,21 @@ setMethod("ssplot", signature(x = "compareClusterResult"),
 ##' 
 ##' additional parameters can refer the following parameters.
 ##'     \itemize{
-##'        \item \code{coords} a data.frame with two columns: 'x' for X-axis coordinate and 'y' for Y-axis coordinate.
+##        \item \code{coords} a data.frame with two columns: 'x' for X-axis coordinate and 'y' for Y-axis coordinate.
 ##'        \item \code{color} Variable that used to color enriched terms, e.g. 'pvalue','p.adjust' or 'qvalue'.
 ##'         the starting position of each text label. 
-##'        \item \code{cex_line} Scale of line width.
+##'        \item \code{size_edge} Scale of line width.
 ##'        \item \code{min_edge} The minimum similarity threshold for whether 
 ##'         two nodes are connected, should between 0 and 1, default value is 0.2.
-##'        \item \code{cex_label_category} Scale of category node label size.
-##'        \item \code{cex_category} Number indicating the amount by which plotting category
+##        \item \code{cex_label_category} Scale of category node label size.
+##'        \item \code{size_category} Number indicating the amount by which plotting category
 ##'         nodes should be scaled relative to the default.
-##'        \item \code{shadowtext} a logical value, whether to use shadow font. 
-
+##        \item \code{shadowtext} a logical value, whether to use shadow font. 
 ##'        \item \code{label_style} style of group label, one of "shadowtext" and "ggforce".
-##'        \item \code{repel whether} to correct the position of the label. Defaults to FALSE.
-##'        \item \code{group_legend} Logical, if TRUE, the grouping legend will be displayed.
+##        \item \code{repel whether} to correct the position of the label. Defaults to FALSE.
+##'        \item \code{group} Logical, if TRUE, the grouping legend will be displayed.
 ##'         The default is FALSE.
-##'        \item \code{cex_label_group} Numeric, scale of group labels size, the default value is 1.
+##        \item \code{cex_label_group} Numeric, scale of group labels size, the default value is 1.
 ##'        \item \code{nWords} Numeric, the number of words in the cluster tags, the default value is 4.
 ##'        \item \code{label_format} a numeric value sets wrap length, alternatively a
 ##'         custom function to format axis labels.
@@ -59,9 +58,8 @@ setMethod("ssplot", signature(x = "compareClusterResult"),
 ##' additional parameters can refer the emapplot function: \link{emapplot}.
 ssplot.enrichResult <- function(x, showCategory = 30,
                                 drfun = NULL,
-                                with_edge = FALSE,
                                 dr.params = list(),
-                                group_category = TRUE,
+                                group = TRUE,
                                 node_label  = "group",
                                 ...) {
     if (is.null(drfun)) {
@@ -78,9 +76,7 @@ ssplot.enrichResult <- function(x, showCategory = 30,
     colnames(coords) <- c("x", "y")
     rownames(coords) <- attr(drResult$data, "Labels")
     p <- emapplot(x = x, showCategory = showCategory,
-                  coords = coords,
-                  with_edge = with_edge,
-                  group_category = group_category,
+                  group = group,
                   node_label = node_label,
                   ...)
 
@@ -92,20 +88,21 @@ ssplot.enrichResult <- function(x, showCategory = 30,
 
 
 
-##' @rdname ssplot
-##' @importFrom ggplot2 theme_classic
-##' @importFrom ggplot2 coord_equal
-##' @importClassesFrom DOSE compareClusterResult
-##' @param cex_pie2axis It is used to adjust the relative size of the pie chart on the coordinate axis,
-##' the default value is 0.0125.
-##' @importFrom stats setNames
+#' @rdname ssplot
+#' @param pie one of 'equal' or 'Count' to set the slice ratio of the pies
+#' @importFrom ggplot2 theme_classic
+#' @importFrom ggplot2 coord_equal
+#' @importClassesFrom DOSE compareClusterResult
+# @param cex_pie2axis It is used to adjust the relative size of the pie chart on the coordinate axis,
+# the default value is 0.0125.
+#' @importFrom stats setNames
 ssplot.compareClusterResult <- function(x, showCategory = 30,
-                                        split = NULL, pie = "equal",
+                                        #split = NULL, 
+                                        pie = "equal",
                                         drfun = NULL,
-                                        with_edge = FALSE,
-                                        cex_pie2axis = 0.0125, 
+                                        #cex_pie2axis = 0.0125, 
                                         dr.params = list(), 
-                                        group_category = TRUE,
+                                        group = TRUE,
                                         node_label  = "group", ...) {
     if (is.null(drfun)) {
         drfun = stats::cmdscale
@@ -115,7 +112,7 @@ ssplot.compareClusterResult <- function(x, showCategory = 30,
     if (is.character(drfun)) {
         drfun <- eval(parse(text=drfun))
     }
-
+    split = NULL
     drResult <- get_drResult(x = x, showCategory = showCategory, 
         split = split, pie = pie, drfun = drfun, dr.params = dr.params)
     coords <- drResult$drdata[, c(1, 2)]
@@ -124,9 +121,9 @@ ssplot.compareClusterResult <- function(x, showCategory = 30,
     p <- emapplot(x, showCategory = showCategory,
                   coords = coords,
                   split = split, pie = pie,
-                  with_edge = with_edge,
-                  cex_pie2axis = cex_pie2axis, 
-                  group_category = group_category,
+                  #with_edge = with_edge,
+                  #cex_pie2axis = cex_pie2axis, 
+                  group = group,
                   node_label = node_label, ...)
     ## Set axis label according to the method parameter
     p <- adj_axis(p = p, drResult = drResult)

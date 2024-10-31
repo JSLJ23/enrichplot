@@ -1,51 +1,3 @@
-##' Gene-Concept Network
-##'
-##'
-##' plot linkages of genes and enriched concepts
-##' (e.g. GO categories, KEGG pathways)
-##' @title cnetplot
-##' @rdname cnetplot
-##' @param x Enrichment result.
-##' @param showCategory A number or a vector of terms. If it is a number, 
-##' the first n terms will be displayed. If it is a vector of terms, 
-##' the selected terms will be displayed.
-##' @param foldChange Fold Change of nodes, the default value is NULL. 
-##' If the user provides the Fold Change value of the nodes, 
-##' it can be used to set the color of the gene node.
-##' Will be removed in the next version.
-##' @param layout Layout of the map, e.g. 'star', 'circle', 'gem', 'dh', 'graphopt', 'grid', 'mds', 
-##' 'randomly', 'fr', 'kk', 'drl' or 'lgl'.
-##' @param ... Additional parameters
-##' @return ggplot object
-##' @export
-##' @examples
-##' \dontrun{
-##'     library(DOSE)
-##'     data(geneList)
-##'     de <- names(geneList)[1:100]
-##'     x <- enrichDO(de)
-##'     x2 <- pairwise_termsim(x)
-##'     cnetplot(x2)
-##'     # use `layout` to change the layout of map
-##'     cnetplot(x2, layout = "star")
-##'     # use `showCategory` to select the displayed terms. It can be a number of a vector of terms.
-##'     cnetplot(x2, showCategory = 10)
-##'     categorys <- c("pre-malignant neoplasm", "intestinal disease",
-##'                    "breast ductal carcinoma", "non-small cell lung carcinoma")
-##'     cnetplot(x2, showCategory = categorys)
-##'     # 'compareClusterResult' object is also supported.
-##'     library(clusterProfiler)
-##'     library(DOSE)
-##'     library(org.Hs.eg.db)
-##'     data(gcSample)
-##'     xx <- compareCluster(gcSample, fun="enrichGO", OrgDb="org.Hs.eg.db")
-##'     xx2 <- pairwise_termsim(xx)
-##'     cnetplot(xx2)
-##' }
-setGeneric("cnetplot",
-           function(x,  ...)
-               standardGeneric("cnetplot")
-           )
 
 
 ##' dotplot for enrichment result
@@ -84,6 +36,7 @@ setGeneric("cnetplot",
 ##'     dotplot(xx2, group = TRUE)
 ##'     dotplot(xx2, x = "GeneRatio", group = TRUE, size = "count")
 ##' }
+##' @author Guangchuang Yu
 setGeneric("dotplot",
            function(object,  ...)
                standardGeneric("dotplot")
@@ -135,6 +88,7 @@ setGeneric("dotplot",
 ##'     xx2 <- pairwise_termsim(xx)
 ##'     emapplot(xx2)
 ##' }
+##' @author Guangchuang Yu
 setGeneric("emapplot",
            function(x,  ...)
                standardGeneric("emapplot")
@@ -212,6 +166,7 @@ setGeneric("pairwise_termsim",
 ##'     goplot(yy)
 ##'     goplot(yy, showCategory = 5)
 ##' }
+##' @author Guangchuang Yu
 setGeneric("goplot",
            function(x, showCategory = 10, color = "p.adjust",
                     layout = "sugiyama", geom = "text", ...)
@@ -235,6 +190,7 @@ setGeneric("goplot",
 ##' data(geneList)
 ##' x <- gseDO(geneList)
 ##' gseaplot(x, geneSetID=1)
+##' @author Guangchuang Yu
 setGeneric("gseaplot",
            function(x, geneSetID, by = "all", title = "", ...) {
                standardGeneric("gseaplot")
@@ -319,6 +275,7 @@ setGeneric("volplot",
 ##' data(geneList)
 ##' x <- gseDO(geneList)
 ##' ridgeplot(x)
+##' @author Guangchuang Yu
 setGeneric("ridgeplot",
            function(x, showCategory=30, fill="p.adjust", core_enrichment = TRUE,
                     label_format = 30, ...)
@@ -337,6 +294,7 @@ setGeneric("ridgeplot",
 ##' @param ... additional parameters
 ##' @return plot
 ##' @export
+##' @author Guangchuang Yu
 setGeneric("upsetplot", function(x, ...) standardGeneric("upsetplot"))
 
 
@@ -435,6 +393,7 @@ setGeneric("treeplot",
 ##'     ego2 <- pairwise_termsim(ego, method = "Wang", semData = d)
 ##'     ssplot(ego2)    
 ##' }
+##' @author Guangchuang Yu
 setGeneric("ssplot",
            function(x, ...)
                standardGeneric("ssplot")

@@ -4,7 +4,6 @@
 \alias{goplot}
 \alias{goplot,enrichResult-method}
 \alias{goplot,gseaResult-method}
-\alias{goplot.enrichResult}
 \title{goplot}
 \usage{
 goplot(
@@ -20,7 +19,7 @@ goplot(
   x,
   showCategory = 10,
   color = "p.adjust",
-  layout = "sugiyama",
+  layout = igraph::layout_with_sugiyama,
   geom = "text",
   ...
 )
@@ -29,16 +28,7 @@ goplot(
   x,
   showCategory = 10,
   color = "p.adjust",
-  layout = "sugiyama",
-  geom = "text",
-  ...
-)
-
-goplot.enrichResult(
-  x,
-  showCategory = 10,
-  color = "p.adjust",
-  layout = "sugiyama",
+  layout = igraph::layout_with_sugiyama,
   geom = "text",
   ...
 )

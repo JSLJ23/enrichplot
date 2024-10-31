@@ -2,7 +2,7 @@
 ##' @exportMethod goplot
 setMethod("goplot", signature(x = "enrichResult"),
           function(x, showCategory = 10, color = "p.adjust",
-                   layout = "sugiyama", geom="text", ...) {
+                   layout = igraph::layout_with_sugiyama, geom="text", ...) {
               goplot.enrichResult(x, showCategory = showCategory,
                   color = color, layout = layout, geom = geom, ...)
           })
@@ -11,25 +11,22 @@ setMethod("goplot", signature(x = "enrichResult"),
 ##' @exportMethod goplot
 setMethod("goplot", signature(x = "gseaResult"),
           function(x, showCategory = 10, color = "p.adjust",
-                   layout = "sugiyama", geom="text", ...) {
+                   layout = igraph::layout_with_sugiyama, geom="text", ...) {
               goplot.enrichResult(x, showCategory = showCategory,
                   color = color, layout = layout, geom = geom, ...)
           })
 
 
-##' @rdname goplot
+
 ##' @importFrom utils data
 ##' @import GOSemSim
 ##' @importFrom ggplot2 scale_fill_gradientn
 ##' @importFrom grid arrow
 ##' @importFrom grid unit
-##' @import ggraph
-##' @importFrom ggraph circle
-##' @importFrom ggraph geom_node_label
 ##' @importFrom rlang check_installed
-##' @author Guangchuang Yu
 goplot.enrichResult <- function(x, showCategory = 10, color = "p.adjust",
-                                layout = "sugiyama", geom = "text", ...) {
+                                layout = igraph::layout_with_sugiyama, geom = "text", 
+                                ID = "Description", ...) {
     segment.size <- get_ggrepel_segsize()
     # has_package("AnnotationDbi")
     n <- update_n(x, showCategory)
@@ -48,9 +45,7 @@ goplot.enrichResult <- function(x, showCategory = 10, color = "p.adjust",
         GOANCESTOR <- getAncestors(x@ontology)
     }
     
-    check_installed('AnnotationDbi', 'for `goplot()`.')
-
-    anc <- AnnotationDbi::mget(id, GOANCESTOR)
+    anc <- GOANCESTOR[id] 
     ca <- anc[[1]]
     for (i in 2:length(anc)) {
         ca <- intersect(ca, anc[[i]])
@@ -66,29 +61,36 @@ goplot.enrichResult <- function(x, showCategory = 10, color = "p.adjust",
     node$color <- x[node$go_id, color]
     node$size <- sapply(geneSets[node$go_id], length)
 
-    g <- graph.data.frame(edge, directed=TRUE, vertices=node)
+    g <- graph_from_data_frame(edge, directed=TRUE, vertices=node)
     E(g)$relationship <- edge[,3]
 
-    p <- ggraph(g, layout=layout) +
-        ## geom_edge_link(aes_(color = ~relationship), arrow = arrow(length = unit(2, 'mm')), end_cap = circle(2, 'mm')) +
-        geom_edge_link(aes_(linetype = ~relationship),
-            arrow = arrow(length = unit(2, 'mm')), end_cap = circle(2, 'mm'),
-            colour="darkgrey") +
-        ## geom_node_point(size = 5, aes_(fill=~color), shape=21) +
-        geom_node_point(size = 5, aes_(color=~color)) +
-        theme_void() +
-        # scale_color_continuous(name = color) + 
-        set_enrichplot_color(name = color)
+    check_installed('ggarchery', 'for `goplot()`.')
 
+    position = ggarchery::position_attractsegment(
+            start_shave=.03, 
+            end_shave=.03,
+            type_shave="proportion"
+        )
+    p <- ggplot(g, layout = layout) +
+        geom_edge(aes(linetype = .data$relationship),
+            arrow = arrow(length = unit(2, 'mm')),
+            colour="darkgrey", position=position) 
+
+    if (ID == "Description" || ID == "ID") {
+        ID <- sprintf("{%s}", ID)
+    } 
 
     if (geom == "label") {
-        p <- p + geom_node_label(aes_(label=~Term, fill=~color), 
-                                 repel=TRUE, segment.size = segment.size) +
-            # scale_fill_continuous(name = color, na.value="white") + 
+        p <- p + geom_label_repel(aes(label= glue::glue(ID, ID=.data[['name']], Description=.data[['Term']]), 
+                        fill=.data$color, segment.size = segment.size)) +
             set_enrichplot_color(type = "fill", name = color, na.value="white")
     } else {
-        p <- p + geom_node_text(aes_(label=~Term), repel=TRUE, segment.size = segment.size)
-    }
+        p <- p + geom_point(aes(color=.data$color), size=5) +
+            geom_text_repel(aes(label=glue::glue(ID, ID=.data[['name']], Description=.data[['Term']])), 
+                    segment.size = segment.size, bg.color="white", bg.r=.1) +
+            set_enrichplot_color(type = "color", name = color, na.value="grey")
+    }        
+        
     return(p)
 }
 

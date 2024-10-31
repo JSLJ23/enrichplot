@@ -1,4 +1,27 @@
-# enrichplot 1.25.2.001
+# enrichplot 1.27.1
+
++ add 'ID' parameter in `goplot()` (2024-10-30, Wed)
+  - <https://github.com/YuLab-SMU/enrichplot/issues/292#issuecomment-2445788948>
+
+# enrichplot 1.26.0
+
++ Bioconductor RELEASE_3_20 (2024-10-30, Wed)
+
+# enrichplot 1.25.6
+
++ pretty gene count legend (2024-10-29, Tue, #271)
+
+# enrichplot 1.25.5
+
++ new `emaplot()`, `goplot()`, `cnetplot()` and `ssplot()`, all power by 'ggtangle' package (2024-10-24, Thu)
++ re-export `ggtangle::cnetplot()` (2024-10-24, Thu)
++ remove `drag_network()` (2024-10-24, Thu)
+
+# enrichplot 1.25.4
+
++ fixed `goplot()` (2024-10-23, Wed, #297, #732, #718)
+
+# enrichplot 1.25.3
 
 + `hplot()`: Horizontal plot for GSEA result (2024-08-27, Tue)
 

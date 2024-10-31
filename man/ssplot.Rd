@@ -21,9 +21,8 @@ ssplot.enrichResult(
   x,
   showCategory = 30,
   drfun = NULL,
-  with_edge = FALSE,
   dr.params = list(),
-  group_category = TRUE,
+  group = TRUE,
   node_label = "group",
   ...
 )
@@ -31,13 +30,10 @@ ssplot.enrichResult(
 ssplot.compareClusterResult(
   x,
   showCategory = 30,
-  split = NULL,
   pie = "equal",
   drfun = NULL,
-  with_edge = FALSE,
-  cex_pie2axis = 0.0125,
   dr.params = list(),
-  group_category = TRUE,
+  group = TRUE,
   node_label = "group",
   ...
 )
@@ -49,21 +45,16 @@ ssplot.compareClusterResult(
 
 additional parameters can refer the following parameters.
     \itemize{
-       \item \code{coords} a data.frame with two columns: 'x' for X-axis coordinate and 'y' for Y-axis coordinate.
        \item \code{color} Variable that used to color enriched terms, e.g. 'pvalue','p.adjust' or 'qvalue'.
         the starting position of each text label. 
-       \item \code{cex_line} Scale of line width.
+       \item \code{size_edge} Scale of line width.
        \item \code{min_edge} The minimum similarity threshold for whether 
         two nodes are connected, should between 0 and 1, default value is 0.2.
-       \item \code{cex_label_category} Scale of category node label size.
-       \item \code{cex_category} Number indicating the amount by which plotting category
+       \item \code{size_category} Number indicating the amount by which plotting category
         nodes should be scaled relative to the default.
-       \item \code{shadowtext} a logical value, whether to use shadow font. 
        \item \code{label_style} style of group label, one of "shadowtext" and "ggforce".
-       \item \code{repel whether} to correct the position of the label. Defaults to FALSE.
-       \item \code{group_legend} Logical, if TRUE, the grouping legend will be displayed.
+       \item \code{group} Logical, if TRUE, the grouping legend will be displayed.
         The default is FALSE.
-       \item \code{cex_label_group} Numeric, scale of group labels size, the default value is 1.
        \item \code{nWords} Numeric, the number of words in the cluster tags, the default value is 4.
        \item \code{label_format} a numeric value sets wrap length, alternatively a
         custom function to format axis labels.
@@ -82,24 +73,14 @@ the selected terms will be displayed.}
 \item{drfun}{The function used for dimension reduction,
 e.g. stats::cmdscale (the default), vegan::metaMDS, or ape::pcoa.}
 
-\item{with_edge}{Logical, if TRUE, draw the edges of the network diagram.
-Will be removed in the next version.}
-
 \item{dr.params}{list, the parameters of tidydr::dr. one of 'category', 'group', 'all' and 'none'.}
 
-\item{group_category}{a logical, if TRUE, group the category.
-Will be removed in the next version.}
+\item{group}{logical, if TRUE, group the category.}
 
 \item{node_label}{Select which labels to be displayed,
 one of 'category', 'group', 'all' and 'none'.}
 
-\item{split}{separate result by 'category' variable}
-
-\item{pie}{proportion of clusters in the pie chart, one of 'equal' (default) and 'Count'
-Will be removed in the next version.}
-
-\item{cex_pie2axis}{It is used to adjust the relative size of the pie chart on the coordinate axis,
-the default value is 0.0125.}
+\item{pie}{one of 'equal' or 'Count' to set the slice ratio of the pies}
 }
 \value{
 ggplot object
@@ -128,4 +109,7 @@ Similarity space plot of enrichment analysis results.
     ego2 <- pairwise_termsim(ego, method = "Wang", semData = d)
     ssplot(ego2)    
 }
+}
+\author{
+Guangchuang Yu
 }
