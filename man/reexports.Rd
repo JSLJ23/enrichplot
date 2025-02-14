@@ -7,6 +7,7 @@
 \alias{facet_grid}
 \alias{plot_list}
 \alias{cnetplot}
+\alias{geom_cnet_label}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -18,6 +19,6 @@ below to see their documentation.
 
   \item{ggplot2}{\code{\link[ggplot2]{facet_grid}}, \code{\link[ggplot2:labs]{ggtitle}}}
 
-  \item{ggtangle}{\code{\link[ggtangle]{cnetplot}}}
+  \item{ggtangle}{\code{\link[ggtangle]{cnetplot}}, \code{\link[ggtangle]{geom_cnet_label}}}
 }}
 

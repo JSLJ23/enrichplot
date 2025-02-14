@@ -39,6 +39,10 @@ ridgeplot.gseaResult <- function(x, showCategory=30, fill="p.adjust",
         selected <- seq_len(showCategory)
     } else if (inherits(showCategory, "character")) {
         ii <- match(showCategory, x@result$Description)
+        if (all(is.na(ii))) {
+            ii <- match(showCategory, x@result$ID)
+        }
+        ii <- ii[!is.na(ii)]
         selected <- x@result[ii, "ID"]
     } else {
         warning("showCategory should be a number of pathways or a vector of selected pathways")
@@ -47,7 +51,7 @@ ridgeplot.gseaResult <- function(x, showCategory=30, fill="p.adjust",
     if (core_enrichment) {
         gs2id <- geneInCategory(x)[selected]
     } else {
-        gs2id <- x@geneSets[x$ID[selected]]
+        gs2id <- x@geneSets[names(x@geneSets) %in% selected]
     }
 
     if (x@readable && length(x@gene2Symbol) > 0) {

@@ -36,5 +36,5 @@ ggplot object
 Internal plot function for plotting compareClusterResult
 }
 \author{
-Guangchuang Yu \url{https://guangchuangyu.github.io}
+Guangchuang Yu \url{https://yulab-smu.top}
 }

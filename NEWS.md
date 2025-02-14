@@ -1,3 +1,28 @@
+# enrichplot 1.27.4
+
++ adjust pie size and category label position in `cnetplot()` (2025-01-08, Wed, #306)
++ clean up code (2024-12-20, Fri)
+
+# enrichplot 1.27.3
+
++ scale pies and add pie legend in `emapplot()` (2024-12-12, Thu, #304)
++ a safe way to extract gene sets in `ridgeplot()` (2024-12-12, Thu, #303)
+
+# enrichplot 1.27.2
+
++ `emapplot()` now allows passing color to a specific color, e.g., color = "black" (2024-11-29, Fri, #300)
++ bug fixed in `emapplot()` 
+  - `size_category` now works for pie node (2024-11-29, Fri, #301)
+  - legend of term nodes will be retained when `group = TRUE` (2024-11-29, Fri, #300)
++ supports passing ID to 'showCategory' in `ridgeplot()` (2024-11-06, Wed, #295)
++ enhancement of `cnetplot()` (2024-11-06, Wed)
+  - 'node_label' can be a vector of selected items/genes to specify the items to be displayed (#293)
+  - 'node_label' can be 'exclusive' to label genes that are uniquely belongs to categories (#253)
+  - 'node_label' can be 'share' to label genes that are share between categories (#253)
+  - 'node_label' can be, e.g. '> 1' or '< 1', to label genes that have log2FC values larger or smaller than the threshold (#253) 
+  - supports using `ggtangle::geom_cnet_label()` to label items/genes in independent layer (#194, #266, #267)
++ fixed `ridgeplot()` when selecting a specific gene set and plotting non-core genes (2024-11-06, Wed, #298)
+
 # enrichplot 1.27.1
 
 + add 'ID' parameter in `goplot()` (2024-10-30, Wed)

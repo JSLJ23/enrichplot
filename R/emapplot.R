@@ -86,22 +86,28 @@ emapplot_internal <- function(
     p <- ggplot(g, layout = layout) + geom_edge(color = color_edge, size = size_edge) 
 
     if (inherits(x, 'compareClusterResult')) {
-        p <- add_node_pie(p, gg$data, pie)
+        p <- add_node_pie(p, gg$data, pie, pie_scale=size_category)
     } else {
-        p <- p %<+% x[, c("Description", color)] + 
-            geom_point(aes(color=.data[[color]], size=.data$size)) + 
-            scale_size(range=c(3, 8) * size_category) 
-        p <- p + set_enrichplot_color(colors = get_enrichplot_color(2))
-        p <- p + guides(size  = guide_legend(order = 1), 
-                        color = guide_colorbar(order = 2, reverse = TRUE))
+        if (color %in% names(as.data.frame(x))) {
+            p <- p %<+% x[, c("Description", color)] + 
+                geom_point(aes(color=.data[[color]], size=.data$size)) + 
+                scale_size(range=c(3, 8) * size_category) 
+            p <- p + set_enrichplot_color(colors = get_enrichplot_color(2))
+            p <- p + guides(size  = guide_legend(order = 1), 
+                            color = guide_colorbar(order = 2, reverse = TRUE))            
+        } else {
+            p <- p %<+% x[, "Description", drop=FALSE] + 
+                geom_point(aes(size=.data$size), color=color) + 
+                scale_size(range=c(3, 8) * size_category) 
+        }
     }
 
     if (group) {
         if (inherits(x, 'compareClusterResult')) {
             p <- p + ggnewscale::new_scale_fill()
-        } else {
-            p <- p + ggnewscale::new_scale_color()
-        }
+        } #else {
+            # p <- p + ggnewscale::new_scale_color()
+        #}
         ggData <- groupNode(p, as.data.frame(x), nWords, clusterFunction = clusterFunction, nCluster=nCluster) 
         p$data <- ggData
         p <- add_ellipse(p, group_legend = TRUE, label_style = label_group_style, ellipse_style = group_style)
